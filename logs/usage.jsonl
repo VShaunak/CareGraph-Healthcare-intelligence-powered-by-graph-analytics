@@ -77,3 +77,5 @@
 {"time": "2026-09-08T19:15:12+00:00", "event": "facility_detail", "zip": "", "transport": "drive", "concerns": [], "results": 1}
 {"time": "2026-09-08T19:15:46+00:00", "event": "nj_recommender", "zip": "08873", "transport": "drive", "concerns": [], "results": 18}
 {"time": "2026-11-02T20:29:50+00:00", "event": "facility_search", "zip": "08901", "transport": "drive", "concerns": [], "results": 1}
+{"time": "2026-11-02T20:32:03+00:00", "event": "facility_search", "zip": "08873", "transport": "drive", "concerns": [], "results": 0}
+{"time": "2026-11-02T20:32:14+00:00", "event": "facility_search", "zip": "08873", "transport": "drive", "concerns": [], "results": 5}
