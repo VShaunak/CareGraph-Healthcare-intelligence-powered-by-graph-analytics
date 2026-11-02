@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}NJ &amp; Regional Recommender — CareGraph Healthcare Intelligence{% endblock %}
+{% block content %}
+<section class="hero-section compact">
+  <div class="hero-content">
+    <div class="badge-eyebrow">
+      <span class="material-symbols-outlined icon-inline" aria-hidden="true">calculate</span>
+      <span>MULTI-CRITERIA ACCESS OPTIMIZATION</span>
+    </div>
+    <h1 class="hero-title">Transparent regional hospital access recommender.</h1>
+    <p class="hero-lede">Search across New Jersey and the Tri-State area. CareGraph retrieves fresh road travel from OSRM and matches verified historical CMS OP-18b emergency department throughput benchmarks.</p>
+  </div>
+
+  <aside class="google-alert-banner alert-warning" role="alert">
+    <div class="alert-icon-wrap">
+      <span class="material-symbols-outlined" aria-hidden="true">speed</span>
+    </div>
+    <div class="alert-body">
+      <strong>Historical Performance vs. Live Queues</strong>
+      <p>CMS OP-18b measures reflect certified historical median throughput times, not live emergency room wait trackers. In acute emergencies, always call 911.</p>
+    </div>
+  </aside>
+</section>
+
+<!-- Mathematical Formulation Explainer -->
+<div class="formula-card">
+  <div class="formula-header">
+    <span class="material-symbols-outlined" aria-hidden="true">functions</span>
+    <span class="formula-title">CareGraph Regional Access Formulation</span>
+  </div>
+  <div class="formula-equation">
+    <code>Access Score = (0.65 × Live Transit Minutes) + (0.35 × CMS Historical ED Minutes)</code>
+  </div>
+  <p class="formula-note">Lower score denotes superior composite access efficiency. Hospitals lacking certified CMS OP-18b measures remain transparently listed as unranked referrals.</p>
+</div>
+
+<section class="search-card" aria-labelledby="rec-heading">
+  <div class="card-header">
+    <div class="header-title-group">
+      <span class="step-badge">3</span>
+      <div>
+        <h2 id="rec-heading" class="card-title">Regional Recommender Query</h2>
+        <p class="card-subtitle">Searches up to 200 miles across NJ, NY, and PA from your entered ZIP code</p>
+      </div>
+    </div>
+    <span class="chip chip-blue">
+      <span class="material-symbols-outlined chip-icon" aria-hidden="true">sync_alt</span>
+      CMS Care Compare + OSRM
+    </span>
+  </div>
+
+  <form id="recommend-form" class="google-form">
+    <div class="form-inputs-grid">
+      <div class="input-group">
+        <label for="recommend-zip" class="field-label">Tri-State / NJ ZIP Code</label>
+        <div class="google-search-bar">
+          <span class="material-symbols-outlined search-icon" aria-hidden="true">pin_drop</span>
+          <input id="recommend-zip" inputmode="numeric" maxlength="5" placeholder="e.g. 07102" required>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="field-label">Transit Method</label>
+        <fieldset class="mode-picker">
+          <legend class="sr-only">Travel mode</legend>
+          <div class="mode-chips">
+            <label class="mode-chip">
+              <input type="radio" name="mode" value="drive" checked>
+              <span class="chip-content">
+                <span class="material-symbols-outlined" aria-hidden="true">directions_car</span>
+                <span>Drive</span>
+              </span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="mode" value="walk">
+              <span class="chip-content">
+                <span class="material-symbols-outlined" aria-hidden="true">directions_walk</span>
+                <span>Walk</span>
+              </span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="mode" value="bike">
+              <span class="chip-content">
+                <span class="material-symbols-outlined" aria-hidden="true">directions_bike</span>
+                <span>Cycle</span>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="input-group form-action-col">
+        <button class="google-btn btn-primary" type="submit" id="rec-btn">
+          <span class="material-symbols-outlined" aria-hidden="true">query_stats</span>
+          <span class="btn-text">Compute Comparison</span>
+        </button>
+      </div>
+    </div>
+  </form>
+  <p class="helper-text">
+    <span class="material-symbols-outlined info-icon" aria-hidden="true">info</span>
+    Queries Medicare.gov CMS Provider Data API dynamically for current accredited hospital records.
+  </p>
+</section>
+
+<!-- Results Section -->
+<section id="recommend-results" class="results-container" hidden aria-live="polite">
+  <div class="google-callout callout-info">
+    <div class="callout-icon">
+      <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+    </div>
+    <div class="callout-content">
+      <span class="badge-eyebrow">MODEL INTERPRETATION</span>
+      <h3 class="callout-heading">Weighted Composite Access Index</h3>
+      <p id="recommend-math" class="callout-text"></p>
+    </div>
+  </div>
+
+  <div class="section-banner">
+    <div class="banner-title-group">
+      <div class="badge-eyebrow">
+        <span class="material-symbols-outlined icon-inline" aria-hidden="true">bar_chart</span>
+        <span>VERIFIED CMS DATA</span>
+      </div>
+      <h2 class="section-title">Regional Access Hierarchy</h2>
+      <p id="recommend-context" class="section-lede"></p>
+    </div>
+  </div>
+
+  <div id="recommend-hospitals" class="hospital-grid"></div>
+
+  <div class="google-notice">
+    <span class="material-symbols-outlined notice-icon" aria-hidden="true">info</span>
+    <div>
+      <strong>Operational Note:</strong> Emergency Department wait times vary dynamically based on ongoing code activations and triage acuity. Historical CMS metrics reflect the latest federal reporting interval.
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

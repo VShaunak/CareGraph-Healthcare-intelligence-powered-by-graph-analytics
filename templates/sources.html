@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Sources &amp; Methodology Limits — CareGraph Healthcare Intelligence{% endblock %}
+{% block content %}
+<section class="hero-section compact">
+  <div class="hero-content">
+    <div class="badge-eyebrow">
+      <span class="material-symbols-outlined icon-inline" aria-hidden="true">policy</span>
+      <span>TRANSPARENCY REPORT &amp; ARCHITECTURE</span>
+    </div>
+    <h1 class="hero-title">Live public sources, explicit mathematical limits.</h1>
+    <p class="hero-lede">CareGraph queries accredited, public healthcare APIs on-demand at runtime. No proprietary database is kept, and no undocumented black-box AI makes clinical determinations.</p>
+  </div>
+</section>
+
+<!-- Source Cards Grid -->
+<div class="sources-grid">
+  <article class="source-google-card">
+    <div class="source-card-header">
+      <div class="source-icon-badge blue-bg">
+        <span class="material-symbols-outlined" aria-hidden="true">map</span>
+      </div>
+      <div>
+        <h3 class="source-title">Geocoding &amp; Map Coordinates</h3>
+        <span class="source-org">OpenStreetMap &bull; Nominatim</span>
+      </div>
+    </div>
+    <p class="source-text">Resolves 5-digit US postal ZIP codes to latitude and longitude centroids, establishing boundary boxes for facility discovery.</p>
+    <a class="source-link" href="https://nominatim.org/release-docs/latest/api/Search/" target="_blank" rel="noreferrer">
+      <span>Read Nominatim Docs</span>
+      <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+    </a>
+  </article>
+
+  <article class="source-google-card">
+    <div class="source-card-header">
+      <div class="source-icon-badge green-bg">
+        <span class="material-symbols-outlined" aria-hidden="true">alt_route</span>
+      </div>
+      <div>
+        <h3 class="source-title">Highway Routing &amp; Transit ETA</h3>
+        <span class="source-org">Project OSRM Highway Engine</span>
+      </div>
+    </div>
+    <p class="source-text">Calculates road-network driving distances and traversal durations using live OpenStreetMap road graphs rather than misleading straight lines.</p>
+    <a class="source-link" href="https://project-osrm.org/docs/v5.24.0/api/" target="_blank" rel="noreferrer">
+      <span>Read OSRM API Docs</span>
+      <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+    </a>
+  </article>
+
+  <article class="source-google-card">
+    <div class="source-card-header">
+      <div class="source-icon-badge yellow-bg">
+        <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+      </div>
+      <div>
+        <h3 class="source-title">Accredited Hospital Identity</h3>
+        <span class="source-org">CMS Medicare.gov Care Compare</span>
+      </div>
+    </div>
+    <p class="source-text">Cross-references hospital facilities against official Centers for Medicare &amp; Medicaid Services registries, ratings, and trauma capabilities.</p>
+    <a class="source-link" href="https://data.cms.gov/provider-data/" target="_blank" rel="noreferrer">
+      <span>View CMS Datastore API</span>
+      <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+    </a>
+  </article>
+
+  <article class="source-google-card">
+    <div class="source-card-header">
+      <div class="source-icon-badge red-bg">
+        <span class="material-symbols-outlined" aria-hidden="true">badge</span>
+      </div>
+      <div>
+        <h3 class="source-title">National Provider Identifier (NPI)</h3>
+        <span class="source-org">HHS CMS NPPES Registry</span>
+      </div>
+    </div>
+    <p class="source-text">Provides cryptographic NPI numbers, formal administrative taxonomy classifications, and state-verified healthcare operator information.</p>
+    <a class="source-link" href="https://npiregistry.cms.hhs.gov/help/customer-service" target="_blank" rel="noreferrer">
+      <span>Search NPPES NPI Registry</span>
+      <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+    </a>
+  </article>
+</div>
+
+<!-- Methodology Explanations -->
+<div class="methodology-container">
+  <section class="methodology-card">
+    <div class="method-header">
+      <span class="material-symbols-outlined method-icon" aria-hidden="true">visibility_off</span>
+      <h3>Urgent Care Queue &amp; Real-Time Capacity Boundaries</h3>
+    </div>
+    <p>There is currently no unified, public-facing live API that reveals real-time urgent-care waiting rooms, queue counts, or triage delays in the United States. CareGraph strictly avoids estimating or guessing wait times when no certified live telemetry feed exists.</p>
+  </section>
+
+  <section class="methodology-card">
+    <div class="method-header">
+      <span class="material-symbols-outlined method-icon" aria-hidden="true">calculate</span>
+      <h3>Graph Proximity &amp; Mathematical Access Optimization</h3>
+    </div>
+    <p>Our graph intelligence engine builds minimum-spanning proximity vectors connecting healthcare facilities. For our regional recommender, an objective composite score ranks verified facilities based on two empirical inputs:</p>
+    <div class="formula-box">
+      <code>Composite Access Score = 0.65 × Live Highway Travel Minutes + 0.35 × CMS Historical OP-18b Minutes</code>
+    </div>
+    <p class="helper-text">Because both inputs represent time delays, lower numerical scores represent superior access profiles.</p>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ facility.get('name', 'Facility Profile') }} — CareGraph Healthcare Intelligence{% endblock %}
+{% block content %}
+<section class="facility-profile-header">
+  <div class="facility-header-left">
+    <div class="badge-eyebrow">
+      <span class="material-symbols-outlined icon-inline" aria-hidden="true">domain_verification</span>
+      <span>OFFICIAL REGISTRY CHECK</span>
+    </div>
+    <h1 id="facility-name" class="facility-title">{{ facility.get('name','Healthcare Facility') }}</h1>
+    <p class="facility-subtitle">
+      <span class="material-symbols-outlined icon-inline" aria-hidden="true">place</span>
+      {{ facility.get('city', '') }}{% if facility.get('city') and facility.get('state') %}, {% endif %}{{ facility.get('state', '') }}
+    </p>
+  </div>
+  <div class="facility-header-actions">
+    <a class="google-btn btn-outlined" href="{{ facility.get('osm_url','#') }}" target="_blank" rel="noreferrer">
+      <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+      <span>View Map Listing</span>
+    </a>
+    <a class="google-btn btn-primary" href="javascript:history.back()">
+      <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+      <span>Back to Results</span>
+    </a>
+  </div>
+</section>
+
+<!-- Official Knowledge Cards Container -->
+<section id="facility-detail" class="profile-card-container" aria-live="polite">
+  <div class="loading-state">
+    <div class="google-spinner" aria-hidden="true"></div>
+    <p class="loading-text">Querying CMS Care Compare &amp; NPPES NPI Registry records...</p>
+  </div>
+</section>
+
+<div class="google-notice">
+  <span class="material-symbols-outlined notice-icon" aria-hidden="true">gavel</span>
+  <div>
+    <strong>Legal Transparency Note:</strong> Official CMS and NPPES records are obtained on-demand directly from US Department of Health and Human Services (HHS) APIs without modifications.
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.facilityQuery = {{ facility|tojson }};
+</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

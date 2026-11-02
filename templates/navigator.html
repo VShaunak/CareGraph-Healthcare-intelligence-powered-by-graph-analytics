@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %}Find Care — CareGraph Healthcare Intelligence{% endblock %}
+{% block content %}
+<section class="hero-section">
+  <div class="hero-content">
+    <div class="badge-eyebrow">
+      <span class="material-symbols-outlined icon-inline" aria-hidden="true">sensors</span>
+      <span>REAL-TIME PUBLIC DISCOVERY &amp; ROUTING</span>
+    </div>
+    <h1 class="hero-title">Find hospitals and urgent care with graph analytics.</h1>
+    <p class="hero-lede">Every query computes fresh OpenStreetMap coordinates, live OSRM road travel estimates, and proximity graph topology for healthcare facilities surrounding your ZIP code.</p>
+
+    <!-- Quick Example ZIP chips -->
+    <div class="quick-chips" aria-label="Sample locations">
+      <span class="quick-label">Try sample ZIP:</span>
+      <button type="button" class="sample-chip" data-zip="08901">08901 (New Brunswick, NJ)</button>
+      <button type="button" class="sample-chip" data-zip="07102">07102 (Newark, NJ)</button>
+      <button type="button" class="sample-chip" data-zip="08540">08540 (Princeton, NJ)</button>
+      <button type="button" class="sample-chip" data-zip="10001">10001 (New York, NY)</button>
+      <button type="button" class="sample-chip" data-zip="19104">19104 (Philadelphia, PA)</button>
+    </div>
+  </div>
+
+  <aside class="google-alert-banner alert-critical" role="alert">
+    <div class="alert-icon-wrap">
+      <span class="material-symbols-outlined" aria-hidden="true">emergency</span>
+    </div>
+    <div class="alert-body">
+      <strong>Life-Threatening Emergency?</strong>
+      <p>For severe chest pain, stroke signs, difficulty breathing, or severe bleeding, call <strong>911</strong> immediately. Never wait for travel rankings.</p>
+    </div>
+  </aside>
+</section>
+
+<!-- Google Search Card -->
+<section class="search-card" aria-labelledby="route-heading">
+  <div class="card-header">
+    <div class="header-title-group">
+      <span class="step-badge">1</span>
+      <div>
+        <h2 id="route-heading" class="card-title">Search Location &amp; Travel Parameters</h2>
+        <p class="card-subtitle">Set your geographic starting point and maximum transit envelope</p>
+      </div>
+    </div>
+    <span class="chip chip-blue">
+      <span class="material-symbols-outlined chip-icon" aria-hidden="true">cloud_sync</span>
+      Live Public Data
+    </span>
+  </div>
+
+  <form id="route-form" class="google-form">
+    <div class="form-inputs-grid">
+      <!-- ZIP Code Input with Google-style search bar -->
+      <div class="input-group">
+        <label for="zip" class="field-label">ZIP Code</label>
+        <div class="google-search-bar">
+          <span class="material-symbols-outlined search-icon" aria-hidden="true">location_on</span>
+          <input id="zip" name="zip" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="e.g. 08901" required aria-describedby="zip-note">
+        </div>
+      </div>
+
+      <!-- Travel Mode Picker with Google Maps Style Chips -->
+      <div class="input-group">
+        <label class="field-label">Travel Mode</label>
+        <fieldset class="mode-picker">
+          <legend class="sr-only">Choose travel mode</legend>
+          <div class="mode-chips">
+            <label class="mode-chip">
+              <input type="radio" name="mode" value="drive" checked>
+              <span class="chip-content">
+                <span class="material-symbols-outlined" aria-hidden="true">directions_car</span>
+                <span>Drive</span>
+              </span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="mode" value="walk">
+              <span class="chip-content">
+                <span class="material-symbols-outlined" aria-hidden="true">directions_walk</span>
+                <span>Walk</span>
+              </span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="mode" value="bike">
+              <span class="chip-content">
+                <span class="material-symbols-outlined" aria-hidden="true">directions_bike</span>
+                <span>Cycle</span>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Radius Slider -->
+      <div class="input-group">
+        <div class="slider-label-row">
+          <label for="route-radius" class="field-label">Search Radius</label>
+          <output id="route-radius-label" class="slider-badge">15 miles</output>
+        </div>
+        <div class="slider-wrapper">
+          <input id="route-radius" name="radius" type="range" min="15" max="200" step="5" value="15" class="google-range">
+          <div class="range-limits">
+            <span>15 mi</span>
+            <span>200 mi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="input-group form-action-col">
+        <button class="google-btn btn-primary" type="submit" id="search-btn">
+          <span class="material-symbols-outlined" aria-hidden="true">search</span>
+          <span class="btn-text">Discover Facilities</span>
+        </button>
+      </div>
+    </div>
+  </form>
+  <p id="zip-note" class="helper-text">
+    <span class="material-symbols-outlined info-icon" aria-hidden="true">info</span>
+    Live search uses OpenStreetMap Nominatim for boundary resolution, live Overpass facility discovery, and OSRM highway routing.
+  </p>
+</section>
+
+<!-- Results Panel -->
+<section id="result-panel" class="results-container" hidden aria-live="polite">
+  <div class="section-banner">
+    <div class="banner-title-group">
+      <div class="badge-eyebrow">
+        <span class="material-symbols-outlined icon-inline" aria-hidden="true">check_circle</span>
+        <span>VERIFIED LIVE RESULTS</span>
+      </div>
+      <h2 id="results-title" class="section-title">Nearby Facilities</h2>
+      <p id="result-context" class="section-lede"></p>
+    </div>
+    <a class="google-btn btn-outlined" href="/sources">
+      <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+      <span>Source Details &amp; Limits</span>
+    </a>
+  </div>
+
+  <!-- Graph Analytics Proximity Network Card -->
+  <section class="facility-network-card" aria-labelledby="network-title">
+    <div class="network-header">
+      <div class="network-title-wrap">
+        <div class="badge-eyebrow">
+          <span class="material-symbols-outlined icon-inline" aria-hidden="true">hub</span>
+          <span>GRAPH ANALYTICS</span>
+        </div>
+        <h2 id="network-title" class="network-heading">Facility Proximity Topology Graph</h2>
+        <p class="network-subtext">Interactive topological graph computing minimum-spanning straight-line proximity vectors between healthcare nodes.</p>
+      </div>
+      <div class="graph-legend">
+        <span class="legend-item"><span class="legend-dot dot-hospital"></span> Hospital</span>
+        <span class="legend-item"><span class="legend-dot dot-urgent"></span> Urgent Care</span>
+        <span class="legend-item"><span class="legend-line"></span> Proximity Vector</span>
+      </div>
+    </div>
+
+    <!-- Live Graph Analytics KPI Bar -->
+    <div class="graph-stats-bar" id="graph-stats-bar">
+      <div class="stat-pill">
+        <span class="stat-num" id="stat-nodes">0</span>
+        <span class="stat-desc">Healthcare Nodes</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-num" id="stat-edges">0</span>
+        <span class="stat-desc">Network Vectors</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-num" id="stat-density">--</span>
+        <span class="stat-desc">Avg Distance</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-num" id="stat-fastest">--</span>
+        <span class="stat-desc">Closest ETA</span>
+      </div>
+    </div>
+
+    <div class="network-canvas-container">
+      <svg id="network-canvas" class="network-canvas" role="img" aria-label="Network graph of nearby hospitals and urgent care facilities"></svg>
+      <div id="network-detail" class="network-tooltip" aria-live="polite">
+        <span class="material-symbols-outlined" aria-hidden="true">touch_app</span>
+        <span>Hover or tap any node or vector to inspect graph analytics telemetry.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Facilities Grid -->
+  <div class="grid-header">
+    <h3 class="grid-heading">Ranked Travel Comparison</h3>
+    <span class="grid-subtext">Ordered by shortest estimated transit time</span>
+  </div>
+  <div id="results" class="hospital-grid"></div>
+
+  <!-- Note callout -->
+  <div class="google-notice">
+    <span class="material-symbols-outlined notice-icon" aria-hidden="true">info</span>
+    <div>
+      <strong>Public Data Disclosure:</strong> Urgent care listings are suitable for non-life-threatening ailments. Live feeds provide geographical road routing; they do not report private hospital bed census or emergency intake queues.
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

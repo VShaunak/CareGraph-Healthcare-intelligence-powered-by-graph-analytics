@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}Care Guide — CareGraph Healthcare Intelligence{% endblock %}
+{% block content %}
+<section class="hero-section compact">
+  <div class="hero-content">
+    <div class="badge-eyebrow">
+      <span class="material-symbols-outlined icon-inline" aria-hidden="true">health_and_safety</span>
+      <span>TRIAGE LOGIC &amp; FACILITY ROUTING</span>
+    </div>
+    <h1 class="hero-title">Healthcare guidance &amp; intelligent routing.</h1>
+    <p class="hero-lede">Select observed concerns to receive a conservative triage routing protocol alongside live nearby hospital and urgent-care navigation.</p>
+  </div>
+
+  <aside class="google-alert-banner alert-critical" role="alert">
+    <div class="alert-icon-wrap">
+      <span class="material-symbols-outlined" aria-hidden="true">emergency</span>
+    </div>
+    <div class="alert-body">
+      <strong>Non-Clinical Protocol Notice</strong>
+      <p>This is non-diagnostic routing guidance. If symptoms appear life-threatening, call <strong>911</strong> now without hesitation.</p>
+    </div>
+  </aside>
+</section>
+
+<section class="search-card" aria-labelledby="care-heading">
+  <div class="card-header">
+    <div class="header-title-group">
+      <span class="step-badge">2</span>
+      <div>
+        <h2 id="care-heading" class="card-title">Select Presenting Symptoms &amp; Location</h2>
+        <p class="card-subtitle">Choose all symptoms that apply to filter facilities conservatively</p>
+      </div>
+    </div>
+    <span class="chip chip-gray">
+      <span class="material-symbols-outlined chip-icon" aria-hidden="true">lock</span>
+      Zero-Tracking Privacy
+    </span>
+  </div>
+
+  <form id="care-form" class="google-form">
+    <div class="form-inputs-grid">
+      <!-- ZIP Code Input -->
+      <div class="input-group">
+        <label for="care-zip" class="field-label">ZIP Code</label>
+        <div class="google-search-bar">
+          <span class="material-symbols-outlined search-icon" aria-hidden="true">location_on</span>
+          <input id="care-zip" name="zip" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="e.g. 08901" required>
+        </div>
+      </div>
+
+      <!-- Travel Mode Picker -->
+      <div class="input-group">
+        <label class="field-label">Travel Mode</label>
+        <fieldset class="mode-picker">
+          <legend class="sr-only">Choose travel mode</legend>
+          <div class="mode-chips">
+            <label class="mode-chip">
+              <input type="radio" name="mode" value="drive" checked>
+              <span class="chip-content">
+                <span class="material-symbols-outlined" aria-hidden="true">directions_car</span>
+                <span>Drive</span>
+              </span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="mode" value="walk">
+              <span class="chip-content">
+                <span class="material-symbols-outlined" aria-hidden="true">directions_walk</span>
+                <span>Walk</span>
+              </span>
+            </label>
+            <label class="mode-chip">
+              <input type="radio" name="mode" value="bike">
+              <span class="chip-content">
+                <span class="material-symbols-outlined" aria-hidden="true">directions_bike</span>
+                <span>Cycle</span>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Radius Slider -->
+      <div class="input-group">
+        <div class="slider-label-row">
+          <label for="care-radius" class="field-label">Search Radius</label>
+          <output id="care-radius-label" class="slider-badge">15 miles</output>
+        </div>
+        <div class="slider-wrapper">
+          <input id="care-radius" name="radius" type="range" min="15" max="200" step="5" value="15" class="google-range">
+          <div class="range-limits">
+            <span>15 mi</span>
+            <span>200 mi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Symptom Category Chips with Google-style Selectable Chips -->
+    <div class="symptom-selection-area">
+      <label class="field-label">Presenting Concerns (Select all that apply)</label>
+      <div class="symptom-chips-grid">
+        {% for code, label in concerns %}
+        <label class="symptom-chip {% if code in ['chest', 'breathing', 'stroke', 'bleeding', 'unconscious'] %}urgency-emergency{% elif code in ['injury', 'pregnancy', 'child', 'fever'] %}urgency-sameday{% else %}urgency-routine{% endif %}">
+          <input type="checkbox" name="concern" value="{{ code }}">
+          <span class="symptom-chip-label">
+            <span class="material-symbols-outlined checkmark" aria-hidden="true">check</span>
+            <span>{{ label }}</span>
+          </span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-footer-row">
+      <p class="privacy-note">
+        <span class="material-symbols-outlined" aria-hidden="true">shield</span>
+        CareGraph logs only aggregated request counters and broad categories locally on your disk. No patient names, IP addresses, or medical records are created.
+      </p>
+      <button class="google-btn btn-primary" type="submit" id="care-btn">
+        <span class="material-symbols-outlined" aria-hidden="true">assignment_turned_in</span>
+        <span class="btn-text">Generate Care Guidance</span>
+      </button>
+    </div>
+  </form>
+</section>
+
+<!-- Results Panel -->
+<section id="care-results" class="results-container" hidden aria-live="polite">
+  <!-- Triage Assessment Banner injected via JS -->
+  <div id="assessment"></div>
+
+  <div class="section-banner">
+    <div class="banner-title-group">
+      <div class="badge-eyebrow">
+        <span class="material-symbols-outlined icon-inline" aria-hidden="true">local_hospital</span>
+        <span>APPROPRIATE CARE OPTIONS</span>
+      </div>
+      <h2 class="section-title">Routed Healthcare Facilities</h2>
+      <p id="care-context" class="section-lede"></p>
+    </div>
+  </div>
+
+  <div id="care-hospitals" class="hospital-grid"></div>
+
+  <!-- Care Network Section -->
+  <section class="facility-network-card" aria-labelledby="care-network-title">
+    <div class="network-header">
+      <div class="network-title-wrap">
+        <div class="badge-eyebrow">
+          <span class="material-symbols-outlined icon-inline" aria-hidden="true">hub</span>
+          <span>GRAPH ANALYTICS</span>
+        </div>
+        <h2 id="care-network-title" class="network-heading">Filtered Facility Network Graph</h2>
+        <p class="network-subtext">Spatial topology of filtered clinical destinations based on your selected triage criteria.</p>
+      </div>
+      <div class="graph-legend">
+        <span class="legend-item"><span class="legend-dot dot-hospital"></span> Hospital</span>
+        <span class="legend-item"><span class="legend-dot dot-urgent"></span> Urgent Care</span>
+      </div>
+    </div>
+    <div class="network-canvas-container">
+      <svg id="care-network-canvas" class="network-canvas" role="img" aria-label="Network graph of care-guide hospitals and urgent care facilities"></svg>
+      <div id="care-network-detail" class="network-tooltip" aria-live="polite">
+        <span class="material-symbols-outlined" aria-hidden="true">touch_app</span>
+        <span>Hover or tap any node to inspect proximity metrics.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="google-notice">
+    <span class="material-symbols-outlined notice-icon" aria-hidden="true">info</span>
+    <div>
+      <strong>Guidance Rule Set:</strong> Facility listings and travel routes are computed live from open mapping sources. The care prompt is an algorithmic rule set designed to avoid under-triaging emergency situations.
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

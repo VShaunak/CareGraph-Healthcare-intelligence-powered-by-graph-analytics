@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Local Activity Logs — CareGraph Healthcare Intelligence{% endblock %}
+{% block content %}
+<section class="hero-section compact">
+  <div class="hero-content">
+    <div class="badge-eyebrow">
+      <span class="material-symbols-outlined icon-inline" aria-hidden="true">terminal</span>
+      <span>ON-DEVICE AUDIT TRAIL</span>
+    </div>
+    <h1 class="hero-title">Local activity and query telemetry.</h1>
+    <p class="hero-lede">Transparent record of queries executed on this computer. Data is stored in a clean, human-readable local JSON-lines file without cloud tracking or external user profiling.</p>
+  </div>
+</section>
+
+<div class="privacy-banner">
+  <div class="privacy-icon-wrap">
+    <span class="material-symbols-outlined" aria-hidden="true">privacy_tip</span>
+  </div>
+  <div class="privacy-content">
+    <strong>Privacy-Preserving Telemetry</strong>
+    <p>Stored attributes include: UTC timestamp, query type, entered ZIP, transit mode, and result counts. Never logged: personal names, IP addresses, street addresses, or free-form clinical notes.</p>
+  </div>
+</div>
+
+{% if rows %}
+<div class="log-table-container">
+  <div class="table-toolbar">
+    <div class="table-title-group">
+      <span class="material-symbols-outlined" aria-hidden="true">history</span>
+      <h3>Recent Query Events ({{ rows|length }})</h3>
+    </div>
+    <span class="chip chip-blue">Local File: logs/usage.jsonl</span>
+  </div>
+  <div class="google-table-wrap">
+    <table class="google-table">
+      <thead>
+        <tr>
+          <th>Timestamp (UTC)</th>
+          <th>Query Operation</th>
+          <th>ZIP Code</th>
+          <th>Mode</th>
+          <th>Selected Triage Concerns</th>
+          <th style="text-align: right;">Yield</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td class="col-mono">{{ row.time }}</td>
+          <td>
+            <span class="event-chip {% if 'search' in row.event %}event-search{% elif 'care' in row.event %}event-care{% elif 'recommend' in row.event %}event-rec{% else %}event-detail{% endif %}">
+              {{ row.event|replace('_', ' ')|title }}
+            </span>
+          </td>
+          <td><strong class="col-bold">{{ row.zip or '—' }}</strong></td>
+          <td>
+            <span class="mode-tag">
+              <span class="material-symbols-outlined icon-mini" aria-hidden="true">
+                {% if row.transport == 'walk' %}directions_walk{% elif row.transport == 'bike' %}directions_bike{% else %}directions_car{% endif %}
+              </span>
+              {{ row.transport|title }}
+            </span>
+          </td>
+          <td class="col-concerns">
+            {% if row.concerns %}
+              {% for c in row.concerns %}
+                <span class="concern-pill">{{ c }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td style="text-align: right;">
+            <span class="results-badge">{{ row.results }} facilities</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="google-empty-state">
+  <div class="empty-icon-wrap">
+    <span class="material-symbols-outlined empty-icon" aria-hidden="true">inbox</span>
+  </div>
+  <h2>No Local Activity Logged Yet</h2>
+  <p>Run a live ZIP search or care triage query from the Find Care tab, then return here to inspect your local audit trail.</p>
+  <a class="google-btn btn-primary" href="/">Go to Find Care</a>
+</div>
+{% endif %}
+{% endblock %}

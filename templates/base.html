@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CareGraph — Live healthcare navigation intelligence and facility proximity graph analytics.">
+  <meta name="theme-color" content="#1a73e8">
+  <title>{% block title %}CareGraph — Healthcare Intelligence{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/" aria-label="CareGraph Home">
+        <div class="brand-logo" aria-hidden="true">
+          <svg class="google-cross" viewBox="0 0 36 36" fill="none">
+            <!-- Google 4-color healthcare intelligence node mark -->
+            <rect x="13" y="3" width="10" height="30" rx="5" fill="#4285F4" opacity="0.95"/>
+            <rect x="3" y="13" width="30" height="10" rx="5" fill="#34A853" opacity="0.95"/>
+            <circle cx="18" cy="18" r="6" fill="#EA4335"/>
+            <circle cx="18" cy="18" r="3.2" fill="#FBBC05"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Care<strong>Graph</strong></span>
+          <span class="brand-sub">Healthcare Intelligence &amp; Graph Analytics</span>
+        </div>
+      </a>
+
+      <nav class="nav-bar" aria-label="Primary navigation">
+        <a class="nav-link" href="/" id="nav-find">
+          <span class="material-symbols-outlined nav-icon" aria-hidden="true">explore</span>
+          <span>Find Care</span>
+        </a>
+        <a class="nav-link" href="/care-guide" id="nav-guide">
+          <span class="material-symbols-outlined nav-icon" aria-hidden="true">medical_services</span>
+          <span>Care Guide</span>
+        </a>
+        <a class="nav-link" href="/nj-recommender" id="nav-rec">
+          <span class="material-symbols-outlined nav-icon" aria-hidden="true">analytics</span>
+          <span>NJ Recommender</span>
+        </a>
+        <a class="nav-link" href="/logs" id="nav-logs">
+          <span class="material-symbols-outlined nav-icon" aria-hidden="true">receipt_long</span>
+          <span>Local Activity</span>
+        </a>
+        <a class="nav-link" href="/sources" id="nav-sources">
+          <span class="material-symbols-outlined nav-icon" aria-hidden="true">verified_user</span>
+          <span>Sources &amp; Limits</span>
+        </a>
+      </nav>
+
+      <div class="header-status">
+        <span class="status-indicator" title="Connected to live OpenStreetMap, OSRM, &amp; CMS sources">
+          <span class="status-pulse"></span>
+          <span class="status-label">Live Sources</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div class="footer-meta">
+        <div class="footer-logo">Care<strong>Graph</strong></div>
+        <p class="footer-disclaimer">
+          <strong>Important Healthcare Notice:</strong> CareGraph is a local research prototype for transparent healthcare navigation and proximity graph analytics. It does not monitor real-time hospital ICU bed census or live emergency-department queue counts. If you are experiencing a life-threatening medical emergency, call <strong>911</strong> immediately.
+        </p>
+      </div>
+      <div class="footer-links">
+        <span class="footer-chip">OpenStreetMap Nominatim</span>
+        <span class="footer-chip">OSRM Routing</span>
+        <span class="footer-chip">CMS Care Compare</span>
+        <span class="footer-chip">CMS NPPES Registry</span>
+      </div>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+  <script>
+    // Highlight active nav item based on current URL path
+    (function() {
+      const path = window.location.pathname;
+      const navMap = {
+        '/': 'nav-find',
+        '/care-guide': 'nav-guide',
+        '/nj-recommender': 'nav-rec',
+        '/logs': 'nav-logs',
+        '/sources': 'nav-sources',
+        '/facility': 'nav-find'
+      };
+      const activeId = navMap[path] || (path.startsWith('/facility') ? 'nav-find' : null);
+      if (activeId) {
+        const el = document.getElementById(activeId);
+        if (el) el.classList.add('active');
+      }
+    })();
+  </script>
+</body>
+</html>
